@@ -1,6 +1,7 @@
 package eu.kaluzinski.pages.careers;
 
 import eu.kaluzinski.pages.PageObject;
+import eu.kaluzinski.utils.Wait;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -54,7 +55,13 @@ public class CareersPage extends PageObject {
         keywordInput.sendKeys(keyword);
     }
 
-    //TODO javadoc
+    /**
+     * Provide keyword, select city and click on search button.
+     *
+     * @param keyword text to type in keyword search field. Method just cleans the field if {@code keyword} is null or empty.
+     * @param city    name of city to match from drop-down. Does nothing if {@code cityName} is null or empty
+     * @return page containing Search Results
+     */
     public SearchResultsPage searchBy(final String keyword, final String city) {
         setKeyword(keyword);
         setCity(city);
@@ -70,10 +77,10 @@ public class CareersPage extends PageObject {
     }
 
     /**
-     * Selects the first matching city from drop-down. <br/>
+     * Select the first matching city from drop-down. <br/>
      * Does nothing if {@code cityName} is null or empty
      *
-     * @param cityName name of city to match
+     * @param cityName name of city to match from drop-down
      * @return name of city that got selected if {@code cityName} non-empty. null otherwise.
      */
     public String setCity(final String cityName) {
@@ -82,12 +89,8 @@ public class CareersPage extends PageObject {
         }
 
         locationSelector.click();
-
-        //FIXME change constant time wait to dynamic till list elements are available
         //Wait for the dropdown to load
-        //TODO move to helper
-        new WebDriverWait(driver, 30).
-                withTimeout(30, TimeUnit.SECONDS);
+        new Wait(driver, 20,TimeUnit.SECONDS ).withTimeout();
 
         WebElement matchingCity = getCityLinksMatchingName(cityName).get(0);
         matchingCity.click();

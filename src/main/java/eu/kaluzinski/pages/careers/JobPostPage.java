@@ -1,7 +1,7 @@
 package eu.kaluzinski.pages.careers;
 
 import eu.kaluzinski.pages.PageObject;
-import eu.kaluzinski.utils.WaitHelper;
+import eu.kaluzinski.utils.Wait;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -34,8 +34,8 @@ public class JobPostPage extends PageObject {
      * @return the header of job post
      */
     public String getHeader() {
-        new WaitHelper(driver, 30, TimeUnit.SECONDS).
-                waitForElementToBeVisible(header);
+        new Wait(driver, 30, TimeUnit.SECONDS).
+                forElementToBeVisible(header);
         return header.getText();
     }
 

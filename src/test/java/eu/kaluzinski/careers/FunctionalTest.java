@@ -2,6 +2,8 @@ package eu.kaluzinski.careers;
 
 import org.openqa.selenium.WebDriver;
 
+import java.util.logging.Logger;
+
 import static org.junit.Assert.assertEquals;
 
 
@@ -13,19 +15,20 @@ import static org.junit.Assert.assertEquals;
  */
 public class FunctionalTest {
 
+    private static Logger log = Logger.getLogger(FunctionalTest.class.getName());
+
     protected WebDriver driver;
 
     /**
      * Asserts that actual value is equal to expected.
      *
-     * @param messagePrefix
-     * @param expected
-     * @param actual
+     * @param messagePrefix Part of message to add in log
+     * @param expected      expected value
+     * @param actual        actual value
      */
     public <T> void assertValue(String messagePrefix, T expected, T actual) {
         assertEquals(messagePrefix + " is not as expected: ", expected, actual);
-        //TODO change to logger
-        System.out.println(messagePrefix + " is as expected: " + actual);
+        log.info(String.format("\n -------------------------------- \n Value is as expected: '%s' \n--------------------------------\n", actual, expected));
     }
 
     /**

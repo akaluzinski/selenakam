@@ -1,7 +1,7 @@
 package eu.kaluzinski.pages.careers;
 
 import eu.kaluzinski.pages.PageObject;
-import eu.kaluzinski.utils.WaitHelper;
+import eu.kaluzinski.utils.Wait;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -60,8 +60,8 @@ public class SearchResultsPage extends PageObject {
      * @return text of label that shows the number of results
      */
     public String getResultsCountLabel() {
-        new WaitHelper(driver, 30, TimeUnit.SECONDS).
-                waitForElementToBeVisible(resultsCountLabel);
+        new Wait(driver, 30, TimeUnit.SECONDS).
+                forElementToBeVisible(resultsCountLabel);
         return resultsCountLabel.getText();
     }
 
