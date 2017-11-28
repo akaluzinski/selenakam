@@ -1,193 +1,86 @@
 package eu.kaluzinski.careers;
 
 
+import eu.kaluzinski.pages.careers.CareersPage;
+import eu.kaluzinski.pages.careers.JobPostPage;
+import eu.kaluzinski.pages.careers.SearchResultsPage;
+import eu.kaluzinski.utils.StringUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import java.util.List;
+
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-
-public class CareersTest {
-    public static final String RESULTS_COUNT_SUFFIX = "results";
-    private WebDriver driver;
-
+/**
+ * Class containing simple tests of Careers page
+ *
+ * @author Adrian Kaluzinski
+ * Date: 11-28-2017
+ */
+public class CareersTest extends FunctionalTest {
 
     @Before
     public void setUp() throws Exception {
-        //TODO use value from PATH if already known.
-        //TODO use setting from configuration file
-        // TODO handle Linux and Mac OS paths as well
-        System.setProperty("webdriver.gecko.driver", "I:\\Selenium\\geckodriver.exe");
-
-        //TODO add console logger and screenshots
-        //TODO introduce Page Object Pattern
-
         driver = new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     }
 
+
     @Test
-    public void testCareersSearch() {
-        openPage("https://akamaijobs.referrals.selectminds.com");
-        assertEquals("Careers page header is incorrect", "Welcome to Akamai Careers",
-                driver.findElement(By.xpath("//div[@id='portal_promo']/div/h2")).getText());
-
-        String keyword = "test";
-        setKeyword(keyword);
-        setCity("Krakow, Poland");
-        search();
-
-        waitForElementToBeVisible(By.className("jSearchTitle"));
-
-//    TODO  Is it enough to verify number from text or is it better to count results?
-        verifyNumberOfResults(12);
-        verifyNumberOfTitlesHavingSubstring(2, "Software Development Engineer in Test");
-
-        String jobPostTitle = "Software Development Engineer in Test - LUNA";
-        openJobByTitle(jobPostTitle);
-        By jobOfferTitleLocator = By.className("title");
-        waitForElementToBeVisible(jobOfferTitleLocator);
-        assertEquals("Job offer page is not correct ", jobPostTitle,
-                driver.findElement(jobOfferTitleLocator).getText());
-
-        verifyJobPostDate("Oct 25, 2017");
-
-    }
-
-
-
-
-    public void openPage(String url) {
-        driver.get(url);
-    }
-
-    public void openJobByTitle(String jobTitle) {
-        List<WebElement> jobLinks = getElementsByLocatorAndNodeText(By.className("job_link"), jobTitle);
-
-        //TODO change exception type and resolve maven crash
-        if (jobLinks.size() != 1)
-            throw new RuntimeException("List of job links is incorrect: There are " + jobLinks.size() + " but 1 was expected");
-
-        jobLinks.get(0).click();
+    public void careersSearchTest() {
+        careersSearchFlow("https://akamaijobs.referrals.selectminds.com",
+                "test", "Krakow, Poland",
+                "Software Development Engineer in Test", 2, 12,
+                "Software Development Engineer in Test - LUNA", "Oct 25, 2017");
     }
 
     /**
-     * Method returns titles of posted jobs from <b>current</b> page
+     * Verifies following flow:
+     * <ol start="1">
+     * <li>Opens Careers web site</li>
+     * <li>Searches for the jobs with {@code keyword} in {@code city}</li>
+     * <li>Validates that there is a total of {@code expectedTotalCount} ​results</li>
+     * <li>Validates that number jobs posted in the first results page that have {@code jobTitleInResults} in their title is {@code expectedJobTitleInResultsCount}</li>
+     * <li>Validates that job post with title {@code jobPostTitle} was created​ ​on​ {@code expectedJobPostDate}​</li>
+     * </ol>
      *
-     * @return list of posted jobs or empty list if none found
+     * @param url                            address of the page to test
+     * @param keyword                        keyword to set in 'Find jobs by keyword' field
+     * @param city                           city to select from location drop-down
+     * @param jobTitleInResults              job title to look for in search results
+     * @param expectedJobTitleInResultsCount expected number of {@code jobTitleInResults} occurrences
+     * @param expectedTotalCount             expected total count on search results page
+     * @param jobPostTitle                   job post to open
+     * @param expectedJobPostDate            expected post date of {@code jobPostTitle}
      */
-    public List<String> getJobTitles() {
-        return driver.findElements(By.className("job_link"))
-                .stream().map(link -> link.getText()).
-                        collect(Collectors.toList());
-    }
+    private void careersSearchFlow(String url, String keyword, String city,
+                                   String jobTitleInResults, int expectedJobTitleInResultsCount,
+                                   int expectedTotalCount,
+                                   String jobPostTitle, String expectedJobPostDate) {
+        openPage(url);
+        CareersPage careersPage = new CareersPage(driver);
+        assertValue("Careers page header", "Welcome to Akamai Careers",
+                careersPage.getHeader());
 
-    /**
-     * Counts number of list's elements containing given sequence.
-     *
-     * @param list
-     * @param sequence
-     * @return
-     */
-    public int getNumberOfElementsWithSequence(List<String> list, String sequence) {
-        //TODO add junits
+        SearchResultsPage searchResult = careersPage.searchBy(keyword, city);
 
-        if (list == null) {
-            throw new NullPointerException("List is null");
-        }
-        int i = 0;
-        for (String listElement : list) {
-            if (listElement == null)
-                continue;
-            else if (listElement.contains(sequence))
-                i++;
-        }
-        return i;
-    }
+        assertValue("Number of search results", expectedTotalCount, searchResult.getResultsCount());
+        assertValue(String.format("Number of '%s' title occurrences", jobTitleInResults),
+                expectedJobTitleInResultsCount, StringUtils.getNumberOfElementsWithSequence(
+                        searchResult.getJobTitles(), jobTitleInResults));
 
-    public int getResultsCount() {
-        By numberOfResultsTextLocator = By.xpath("//div[@id='job_results_list_hldr']/div/div[@class='number_of_results']");
-        waitForElementToBeVisible(numberOfResultsTextLocator);
-        String actualResultsText = driver.findElement(numberOfResultsTextLocator).getText();
-        return Integer.parseInt(actualResultsText.split(RESULTS_COUNT_SUFFIX)[0].trim());
-    }
+//        assertValue(String.format("Number of '%s' job posts", jobPostTitle), 1,
+//                searchResult.getJobTitlesCount(jobPostTitle));
 
-    public List<WebElement> getElementsByLocatorAndNodeText(By locator, String nodeText) {
-        return driver.findElements(locator).stream().filter(
-                option -> option.getText().trim().equals(nodeText)).collect(Collectors.toList());
-    }
-
-
-    public void waitForElementToBeVisible(By locator) {
-        waitForElementToBeVisible(locator, 20);
-    }
-
-    public void waitForElementToBeVisible(By locator, int timeout) {
-        WebDriverWait wait = new WebDriverWait(driver, timeout);
-        wait.until(ExpectedConditions.visibilityOf(driver.findElement(locator)));
-    }
-
-
-    public void setKeyword(String keyword) {
-        WebElement inputField = driver.findElement(By.id("keyword"));
-        //Clean in case that browser has some value cached
-        inputField.clear();
-        inputField.sendKeys(keyword);
-    }
-
-    public void search() {
-        driver.findElement(By.id("jSearchSubmit")).click();
-    }
-
-    public void setCity(String cityName) {
-        driver.findElement(By.id("loc_placeholder")).click();
-
-        //FIXME change constant time wait to dynamic till list elements are available
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.withTimeout(2, TimeUnit.SECONDS);
-
-        List<WebElement> listOfOptions = getElementsByLocatorAndNodeText(By.className("active-result"), cityName);
-        if (listOfOptions.size() != 1)
-            throw new RuntimeException("List of cities is incorrect: There are " + listOfOptions.size() + " but 1 was expected");
-
-        listOfOptions.get(0).click();
-    }
-
-
-    public void verifyNumberOfResults(int expectedNumberOfResults) {
-        assertEquals("Number of results is not as expected", getResultsCount(), expectedNumberOfResults);
-        //TODO change assertEquals() to info+fail block
-        System.out.println("Number of results is correct: " + expectedNumberOfResults);
-    }
-
-    private void verifyNumberOfTitlesHavingSubstring(int expectedNumberOfTitleSubstrings, String titleSubstring) {
-        Assert.assertEquals(
-                String.format("Number of '%s' occurrences in title is incorrect", titleSubstring),
-                expectedNumberOfTitleSubstrings,
-                getNumberOfElementsWithSequence(getJobTitles(), titleSubstring)
-        );
-    }
-
-    public void verifyJobPostDate(String expectedDate) {
-        //TODO date as a date type
-        assertEquals("Job post date is not correct",
-                driver.findElement(By.className("job_post_date")).getText(), expectedDate);
+        JobPostPage jobPost = searchResult.openJobPostByTitle(jobPostTitle);
+        assertValue("Job offer page header", jobPostTitle, jobPost.getHeader());
+        assertValue("Job post date", expectedJobPostDate, jobPost.getPostDate());
     }
 
     @After
     public void tearDown() {
         driver.quit();
     }
-
 }
 
