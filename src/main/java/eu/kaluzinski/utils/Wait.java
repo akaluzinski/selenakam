@@ -1,6 +1,7 @@
 package eu.kaluzinski.utils;
 
 
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * Utility class that introduces waiting methods.
  *
  * @author Adrian Kaluzinski
- * Date: 11-28-2017
+ * Date: 11-29-2017
  */
 public class Wait {
 
@@ -39,7 +40,8 @@ public class Wait {
     /**
      * Waits for {@code element} to exists. Waits for the time defined in constructor.
      *
-     * @param element
+     * @param element page will wait for this element till it is visible or timeout elapses
+     * @throws TimeoutException when timeout elapses
      */
     public void forElementToBeVisible(WebElement element) {
         wait.until(ExpectedConditions.visibilityOf(element));

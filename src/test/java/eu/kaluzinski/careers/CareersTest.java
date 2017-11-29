@@ -1,6 +1,5 @@
 package eu.kaluzinski.careers;
 
-
 import eu.kaluzinski.pages.careers.CareersPage;
 import eu.kaluzinski.pages.careers.JobPostPage;
 import eu.kaluzinski.pages.careers.SearchResultsPage;
@@ -18,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * @author Adrian Kaluzinski
  * Date: 11-28-2017
  */
-public class CareersTest extends FunctionalTest {
+public class CareersTest extends WebTest {
 
     @Before
     public void setUp() throws Exception {

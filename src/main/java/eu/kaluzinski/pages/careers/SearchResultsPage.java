@@ -1,6 +1,7 @@
 package eu.kaluzinski.pages.careers;
 
 import eu.kaluzinski.pages.PageObject;
+import eu.kaluzinski.utils.StringUtils;
 import eu.kaluzinski.utils.Wait;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * This class represents page containing search results
  *
- * @autor Adrian Kaluzinski
+ * @author Adrian Kaluzinski
  * Date: 11-28-2017
  */
 public class SearchResultsPage extends PageObject {
@@ -71,8 +72,7 @@ public class SearchResultsPage extends PageObject {
      * @return number representing results count
      */
     public int getResultsCount() {
-        return Integer.parseInt(
-                getResultsCountLabel().split(RESULTS_COUNT_SUFFIX)[0].trim());
+        return StringUtils.extractFirstIntegerFromString(getResultsCountLabel());
     }
 
     /**

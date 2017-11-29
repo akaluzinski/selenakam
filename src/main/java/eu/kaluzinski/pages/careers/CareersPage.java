@@ -1,12 +1,12 @@
 package eu.kaluzinski.pages.careers;
 
 import eu.kaluzinski.pages.PageObject;
+import eu.kaluzinski.utils.StringUtils;
 import eu.kaluzinski.utils.Wait;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +49,7 @@ public class CareersPage extends PageObject {
     public void setKeyword(String keyword) {
         //Clean in case that browser has value cached
         keywordInput.clear();
-        if (keyword == null || keyword.isEmpty()) {
+        if (StringUtils.isNullOrEmpty(keyword)) {
             return;
         }
         keywordInput.sendKeys(keyword);
@@ -84,7 +84,7 @@ public class CareersPage extends PageObject {
      * @return name of city that got selected if {@code cityName} non-empty. null otherwise.
      */
     public String setCity(final String cityName) {
-        if (cityName == null || cityName.isEmpty()) {
+        if (StringUtils.isNullOrEmpty(cityName)) {
             return null;
         }
 

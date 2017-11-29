@@ -13,10 +13,9 @@ import static org.junit.Assert.assertEquals;
  * @author Adrian Kaluzinski
  * Date: 11-28-2017
  */
-public class FunctionalTest {
+public class WebTest {
 
-    private static Logger log = Logger.getLogger(FunctionalTest.class.getName());
-
+    protected static Logger log = Logger.getLogger(WebTest.class.getName());
     protected WebDriver driver;
 
     /**
@@ -28,7 +27,8 @@ public class FunctionalTest {
      */
     public <T> void assertValue(String messagePrefix, T expected, T actual) {
         assertEquals(messagePrefix + " is not as expected: ", expected, actual);
-        log.info(String.format("\n -------------------------------- \n Value is as expected: '%s' \n--------------------------------\n", actual, expected));
+        log.info(String.format("\n -------------------------------- \n %s is as expected: '%s' \n--------------------------------\n",
+                messagePrefix, expected));
     }
 
     /**

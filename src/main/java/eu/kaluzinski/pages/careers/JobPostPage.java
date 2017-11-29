@@ -29,7 +29,7 @@ public class JobPostPage extends PageObject {
     }
 
     /**
-     * Method returns header of job post. Waits for the header to appear for 30 seconds.
+     * Method returns the header of job post. Waits for the header to appear for 30 seconds.
      *
      * @return the header of job post
      */
